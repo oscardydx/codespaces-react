@@ -1,0 +1,83 @@
+   body {
+            font-family: Arial, sans-serif;
+        }
+        .tab-container {
+            width: 100%;
+            margin: 20px auto;
+        }
+        .tabs {
+            display: flex;
+            cursor: pointer;
+            justify-content: space-around;
+            background-color: #ac2828;
+            padding: 10px 0;
+        }
+        .tabs div {
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            background-color: #f0a6a6;
+        }
+        .tabs div.active {
+            background-color: rgb(175, 36, 36);
+            border-top: 3px solid #007bff;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #c75252;
+        }
+        .description-container {
+            position: relative;
+        }
+        
+        .description-container p {
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .description-container p.collapsed {
+            max-width: 200px; /* Ajusta el ancho máximo según sea necesario */
+        }
+        
+        .description-container p.expanded {
+            white-space: normal;
+        }
+        
+        /* Botón */
+        .description-container button {
+            display: inline-block;
+            margin-top: 8px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .description-container button:hover {
+            background-color: #0056b3;
+        }
+        
+        
