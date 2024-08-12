@@ -7,7 +7,7 @@ function App() {
       <header className="App-header">
         <img src="IconAnalitic.png" className="App-logo" alt="logo" />
         <p>
-           <span className="heart">♥️</span> Análisis de datos nacionales
+           <span className="heart">♥️</span> Análisis de datos Nacionales
         </p>
       
     
