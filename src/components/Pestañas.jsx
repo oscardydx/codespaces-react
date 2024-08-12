@@ -7,18 +7,23 @@ export const Pestañas = () => {
 
     const [dataPresident, setDataPresident] = useState([]);
     const [dataOutput, setDataOutput] = useState([]);
+
     const [dataTuristic, setDataTuristic] = useState([]);
+    const [dataOutputTuristic, setDataOutputTuristic] = useState([]);
 
     const [fetchDuration, setFetchDuration] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [expandedRows, setExpandedRows] = useState([]);
 
+    const [dataDepartaments, setDataDepartaments] = useState([]);
+
     //Almacenar Tab Escogido
     const [tabIndex, setTabIndex] = useState(0);
 
     // Efecto para cargar los datos
     useEffect(() => {
+
         const startTime = performance.now(); // Inicia el cronómetro
         let address;
         switch (tabIndex) {
@@ -63,16 +68,39 @@ export const Pestañas = () => {
                 setError(error);
                 setLoading(false);
             });
+
+        //Obtener Departamentos solo una vez
+        if(dataDepartaments.length<1){
+            fetch('https://api-colombia.com/api/v1/Department' )
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('La red no funciona de manera correcta.');
+                }
+                return response.json();
+            })
+            .then(data => {
+           
+                setDataDepartaments(data);
+            
+            })
+            .catch(error => {
+                setError(error);
+                setLoading(false);
+            });
+        }
+
+
     },  [tabIndex]); // Solo se ejecuta cada vez que cambia el tab 
 
     // Función para reorganizar los datos
     const reorderData = (dataInput,IndexTab) => {
-        let updatedDataOutput = [...dataOutput]; // Crear una copia de dataOutput
+        let updatedDataOutput ; // Crear una copia de dataOutput
         
         //Ordenar Información de presidentes 
         if(IndexTab==0){
-
+            updatedDataOutput = [...dataOutput];
             dataInput.forEach(data => {
+               
                 let dataFindIndex = updatedDataOutput.findIndex(dataOut => dataOut.politicalParty.toUpperCase() === data.politicalParty.toUpperCase());
                 
                 if (dataFindIndex > -1) {
@@ -83,16 +111,42 @@ export const Pestañas = () => {
                     updatedDataOutput.push({ politicalParty: data.politicalParty, count: 1 });
                 }
             });
+            setDataOutput(updatedDataOutput.sort((a, b) => b.count - a.count)); 
+            
         }
         //Ordenar Información de atracciones turisticas
         if(IndexTab==1){
-
+            updatedDataOutput = [...dataOutputTuristic];
             dataInput.forEach(data => {
-          
+                let dataFindIndex = updatedDataOutput.findIndex(dataOut => dataOut.city.toUpperCase() === data.city.name.toUpperCase());
+                
+                if (dataFindIndex > -1) {
+                    // Si la ciudad ya existe en dataOutput, incrementa el contador
+                    updatedDataOutput[dataFindIndex].count += 1;
+                } else {
+                    // Si no existe, agregar un nuevo objeto con departamento
+                    let DepartmentIndex=dataDepartaments.findIndex(dataO=> dataO.id===data.city.departmentId);
+                    if(DepartmentIndex>=0){
+                        updatedDataOutput.push({departament:dataDepartaments[DepartmentIndex].name, city: data.city.name, count: 1 });
+                    }else{
+                        updatedDataOutput.push({ departament:null,city: data.city.name, count: 1 });
+                    }
+                }
             });
+            
+            setDataOutputTuristic(updatedDataOutput.
+                sort((a, b) => {
+                    if (a[0] < b[0]) {
+                        return -1;
+                    }
+                    if (a[0] > b[0]) {
+                        return 1;
+                    }
+                    return 0;
+                })); 
         }
 
-        setDataOutput(updatedDataOutput.sort((a, b) => b.count - a.count)); // Actualizar el estado con la nueva versión de dataOutput
+        
     };
 
     // Función para alternar la expansión de las filas
@@ -207,6 +261,7 @@ export const Pestañas = () => {
                             <th>Latitude</th>
                             <th>Longitud</th>
                             <th>Ciudad</th>
+                            <th>Descripción</th>
                            
                         </tr>
                     </thead>
@@ -217,8 +272,38 @@ export const Pestañas = () => {
                                     <td>{item.latitude} </td>
                                     <td>{item.longitude} </td>
                                     <td>{item.city.name} </td>
+                                    <td>
+                                    <div className="description-container">
+                                        <p className={expandedRows.includes(index) ? 'expanded' : 'collapsed'}>
+                                            {item.description}
+                                        </p>
+                                        <button onClick={() => toggleExpand(index)}>
+                                            {expandedRows.includes(index) ? 'Leer menos' : 'Ver más'}
+                                        </button>
+                                    </div>
+                                </td>
                                 </tr>
                             ))}
+                    </tbody>
+                </table>
+                <p>Atracciones turisticas agrupadas por Departamento y conteo por ciudad.</p>
+               
+                <table className="data-table">
+                    <thead>
+                        <tr>
+                            <th>Departmento</th>
+                            <th>Ciudad</th>
+                            <th>Conteo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {dataOutputTuristic.map((item, index) => (
+                            <tr key={index}>
+                                <td>{item.departament}</td>
+                                <td>{item.city}</td>
+                                <td>{item.count}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
      
