@@ -78,11 +78,7 @@ export const Pestañas = () => {
                 const endTime = performance.now();
                 setFetchDuration(endTime - startTime);
 
-                // Solo calcular la estructura anidada para el tab de aeropuertos
-                if (tabIndex === 2) {
-                    const dataOA = constructNestedStructure(dataOutputAirports2);
-                    setDataOutputAirports3(dataOA);
-                }
+               
             })
             .catch(error => {
                 setError(error);
@@ -248,43 +244,39 @@ export const Pestañas = () => {
                 }
                 return 0;
             }));
-            
-            const dataOA = constructNestedStructure(dataOutputAirports2);
+            console.log("Ingreso:", updatedDataOutput.length);
+            const dataOA = constructNestedStructure(updatedDataOutput);
             setDataOutputAirports3(dataOA);
+           
         }
 
         
     };
 
     const constructNestedStructure = (dataArray) => {
+        console.log("Datos para construir estructura anidada:", dataArray); // Añadir esto para depurar
         return dataArray.reduce((acc, item) => {
-            // Verifica si la región ya existe
             if (!acc[item.region]) {
                 acc[item.region] = {};
             }
-    
-            // Verifica si el departamento ya existe dentro de la región
             if (!acc[item.region][item.department]) {
                 acc[item.region][item.department] = {};
             }
-    
-            // Verifica si la ciudad ya existe dentro del departamento
             if (!acc[item.region][item.department][item.city]) {
                 acc[item.region][item.department][item.city] = {};
             }
-    
-            // Verifica si el tipo ya existe dentro de la ciudad y lo incrementa
             if (!acc[item.region][item.department][item.city][item.type]) {
                 acc[item.region][item.department][item.city][item.type] = item.count;
             } else {
                 acc[item.region][item.department][item.city][item.type] += item.count;
             }
-    
             return acc;
         }, {});
     };
+    
     // Función para renderizar la estructura anidada de dataOutputAirports3
     const renderNestedData = (data) => {
+        console.log("Datos para renderizar:", data); // Añadir esto para depurar
         return Object.keys(data).map((key) => {
             if (typeof data[key] === 'object') {
                 return (
@@ -302,7 +294,6 @@ export const Pestañas = () => {
             }
         });
     };
-
     // Función para alternar la expansión de las filas
     const toggleExpand = (index) => {
         setExpandedRows(prev =>
